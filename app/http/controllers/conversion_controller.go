@@ -62,8 +62,8 @@ func (r *ConversionController) Upload(ctx http.Context) http.Response {
 	}
 
 	currentTime := time.Now()
-	tz, _ := time.LoadLocation("America/Havana")
-	formated := fmt.Sprintf("%s_%s-%s-%s", currentTime.In(tz).Format(time.DateOnly), strconv.Itoa(currentTime.Hour()), strconv.Itoa(currentTime.Minute()), strconv.Itoa(currentTime.Second()))
+	/*tz, _ := time.LoadLocation("America/Havana")*/
+	formated := fmt.Sprintf("%s_%s-%s-%s", currentTime.Format(time.DateOnly), strconv.Itoa(currentTime.Hour()), strconv.Itoa(currentTime.Minute()), strconv.Itoa(currentTime.Second()))
 
 	_, err = file.StoreAs("./public/files/"+formated, fmt.Sprintf("%s", filename))
 	if err != nil {
