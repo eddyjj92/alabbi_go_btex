@@ -5,13 +5,14 @@ import (
 	"fmt"
 	"github.com/goravel/framework/contracts/http"
 	"github.com/goravel/framework/facades"
-	"github.com/goravel/framework/support/carbon"
 	"github.com/goravel/framework/support/path"
 	"github.com/goravel/framework/validation"
 	"io"
 	"log"
 	"os"
 	"os/exec"
+	"strconv"
+	"time"
 )
 
 type ConversionController struct {
@@ -60,7 +61,11 @@ func (r *ConversionController) Upload(ctx http.Context) http.Response {
 		})
 	}
 
-	_, err = file.StoreAs("./public/files/"+carbon.Now().Format("d-m-Y_h-i", "America/Havana"), fmt.Sprintf("%s", filename))
+	currentTime := time.Now()
+	tz, _ := time.LoadLocation("America/Havana")
+	formated := fmt.Sprintf("%s_%s-%s-%s", currentTime.In(tz).Format(time.DateOnly), strconv.Itoa(currentTime.Hour()), strconv.Itoa(currentTime.Minute()), strconv.Itoa(currentTime.Second()))
+
+	_, err = file.StoreAs("./public/files/"+formated, fmt.Sprintf("%s", filename))
 	if err != nil {
 		return ctx.Response().Status(500).Json(http.Json{
 			"error":     err.Error(),
@@ -75,11 +80,11 @@ func (r *ConversionController) Upload(ctx http.Context) http.Response {
 		"error":     nil,
 		"message":   "Archivo importado listo para procesar.",
 		"validator": nil,
-		"ruta":      fmt.Sprintf("%s", ruta+"\\"+path.Storage()+"\\app\\public\\files\\"+carbon.Now().Format("d-m-Y_h-i", "America/Havana")+"\\"+filename),
+		"ruta":      fmt.Sprintf("%s", ruta+"\\"+path.Storage()+"\\app\\public\\files\\"+formated+"\\"+filename),
 		"filename":  filename,
-		"outputDir": fmt.Sprintf("%s", ruta+"\\"+path.Storage()+"\\app\\public\\files\\"+carbon.Now().Format("d-m-Y_h-i", "America/Havana")),
+		"outputDir": fmt.Sprintf("%s", ruta+"\\"+path.Storage()+"\\app\\public\\files\\"+formated),
 		"extension": file.GetClientOriginalExtension(),
-		"folder":    carbon.Now().Format("d-m-Y_h-i", "America/Havana"),
+		"folder":    formated,
 	})
 }
 
@@ -116,6 +121,7 @@ func (r *ConversionController) Start(ctx http.Context) http.Response {
 	cmd := exec.Command(
 		facades.Storage().Disk("public").Path("whisper\\whisper-faster.exe"),
 		[]string{
+			fmt.Sprintf("--model=%s", "medium"),
 			fmt.Sprintf("%s", data["input"]),
 			fmt.Sprintf("--language=%s", "Spanish"),
 			fmt.Sprintf("%s", "-pp"),

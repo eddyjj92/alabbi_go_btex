@@ -1,1 +1,4 @@
 goravel.exe
+.env
+.idea
+.DS_Store
