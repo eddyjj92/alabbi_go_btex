@@ -7,6 +7,7 @@ import (
 	"github.com/goravel/framework/facades"
 	"github.com/goravel/framework/support/path"
 	"github.com/goravel/framework/validation"
+	"goravel/app/models"
 	"io"
 	"log"
 	"os"
@@ -76,6 +77,9 @@ func (r *ConversionController) Upload(ctx http.Context) http.Response {
 
 	ruta, _ := os.Getwd()
 
+	process := models.Process{Folder: formated, File: filename}
+	facades.Orm().Query().Create(&process)
+
 	return ctx.Response().Success().Json(http.Json{
 		"error":     nil,
 		"message":   "Archivo importado listo para procesar.",
@@ -125,8 +129,8 @@ func (r *ConversionController) Start(ctx http.Context) http.Response {
 			fmt.Sprintf("%s", data["input"]),
 			fmt.Sprintf("--language=%s", "Spanish"),
 			fmt.Sprintf("%s", "-pp"),
-			fmt.Sprintf("--beam_size=%s", "1"),
-			fmt.Sprintf("--best_of=%s", "1"),
+			/*fmt.Sprintf("--beam_size=%s", "1"),
+			fmt.Sprintf("--best_of=%s", "1"),*/
 			fmt.Sprintf("--output_format=%s", "all"),
 			fmt.Sprintf("--output_dir=%s", data["output_dir"]),
 		}...)

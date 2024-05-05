@@ -6,4 +6,10 @@ import (
 
 type Process struct {
 	orm.Model
+	Folder string
+	File   string
+}
+
+func (r *User) TableName() string {
+	return "process"
 }

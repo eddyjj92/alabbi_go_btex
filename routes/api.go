@@ -22,4 +22,9 @@ func Api() {
 		router.Post("/api/output_file", explorerController.OutputFile)
 	})
 
+	processController := controllers.NewProcessController()
+	facades.Route().Group(func(router route.Router) {
+		router.Get("/api/processes", processController.Index)
+	})
+
 }
