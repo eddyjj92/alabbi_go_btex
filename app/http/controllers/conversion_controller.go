@@ -125,12 +125,12 @@ func (r *ConversionController) Start(ctx http.Context) http.Response {
 	cmd := exec.Command(
 		facades.Storage().Disk("public").Path("whisper\\whisper-faster.exe"),
 		[]string{
-			fmt.Sprintf("--model=%s", "medium"),
+			fmt.Sprintf("--model=%s", "large-v2"),
 			fmt.Sprintf("%s", data["input"]),
 			fmt.Sprintf("--language=%s", "Spanish"),
 			fmt.Sprintf("%s", "-pp"),
-			/*fmt.Sprintf("--beam_size=%s", "1"),
-			fmt.Sprintf("--best_of=%s", "1"),*/
+			fmt.Sprintf("--beam_size=%s", "1"),
+			fmt.Sprintf("--best_of=%s", "1"),
 			fmt.Sprintf("--output_format=%s", "all"),
 			fmt.Sprintf("--output_dir=%s", data["output_dir"]),
 		}...)
