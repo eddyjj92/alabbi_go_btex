@@ -6,8 +6,10 @@ import (
 
 type Process struct {
 	orm.Model
-	Folder string
-	File   string
+	File      string
+	Extension string
+	Folder    string
+	Route     string
 }
 
 func (r *User) TableName() string {

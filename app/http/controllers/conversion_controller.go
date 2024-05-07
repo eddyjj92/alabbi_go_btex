@@ -77,18 +77,23 @@ func (r *ConversionController) Upload(ctx http.Context) http.Response {
 
 	ruta, _ := os.Getwd()
 
-	process := models.Process{Folder: formated, File: filename}
+	process := models.Process{
+		File:      filename,
+		Extension: file.GetClientOriginalExtension(),
+		Folder:    formated,
+		Route:     fmt.Sprintf("%s", ruta+"\\"+path.Storage()+"\\app\\public\\files\\"),
+	}
 	facades.Orm().Query().Create(&process)
 
 	return ctx.Response().Success().Json(http.Json{
 		"error":     nil,
 		"message":   "Archivo importado listo para procesar.",
 		"validator": nil,
-		"ruta":      fmt.Sprintf("%s", ruta+"\\"+path.Storage()+"\\app\\public\\files\\"+formated+"\\"+filename),
 		"filename":  filename,
-		"outputDir": fmt.Sprintf("%s", ruta+"\\"+path.Storage()+"\\app\\public\\files\\"+formated),
 		"extension": file.GetClientOriginalExtension(),
 		"folder":    formated,
+		"outputDir": fmt.Sprintf("%s", ruta+"\\"+path.Storage()+"\\app\\public\\files\\"+formated),
+		"ruta":      fmt.Sprintf("%s", ruta+"\\"+path.Storage()+"\\app\\public\\files\\"+formated+"\\"+filename),
 	})
 }
 
@@ -129,8 +134,8 @@ func (r *ConversionController) Start(ctx http.Context) http.Response {
 			fmt.Sprintf("%s", data["input"]),
 			fmt.Sprintf("--language=%s", "Spanish"),
 			fmt.Sprintf("%s", "-pp"),
-			fmt.Sprintf("--beam_size=%s", "1"),
-			fmt.Sprintf("--best_of=%s", "1"),
+			/*fmt.Sprintf("--beam_size=%s", "1"),
+			fmt.Sprintf("--best_of=%s", "1"),*/
 			fmt.Sprintf("--output_format=%s", "all"),
 			fmt.Sprintf("--output_dir=%s", data["output_dir"]),
 		}...)
