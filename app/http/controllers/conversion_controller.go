@@ -127,18 +127,22 @@ func (r *ConversionController) Start(ctx http.Context) http.Response {
 		})
 	}
 
-	cmd := exec.Command(
-		facades.Storage().Disk("public").Path("whisper\\whisper-faster.exe"),
-		[]string{
-			fmt.Sprintf("--model=%s", "large-v2"),
-			fmt.Sprintf("%s", data["input"]),
-			fmt.Sprintf("--language=%s", "Spanish"),
-			fmt.Sprintf("%s", "-pp"),
-			/*fmt.Sprintf("--beam_size=%s", "1"),
-			fmt.Sprintf("--best_of=%s", "1"),*/
-			fmt.Sprintf("--output_format=%s", "all"),
-			fmt.Sprintf("--output_dir=%s", data["output_dir"]),
-		}...)
+	args := []string{
+		fmt.Sprintf("--model=%s", data["model"]),
+		fmt.Sprintf("%s", data["input"]),
+		fmt.Sprintf("--language=%s", "Spanish"),
+		fmt.Sprintf("%s", "-pp"),
+		/*fmt.Sprintf("--beam_size=%s", "1"),
+		fmt.Sprintf("--best_of=%s", "1"),*/
+		fmt.Sprintf("--output_format=%s", "all"),
+		fmt.Sprintf("--output_dir=%s", data["output_dir"]),
+	}
+
+	if ctx.Request().InputBool("translate") == true {
+		args = append(args, fmt.Sprintf("--task=%s", "translate"))
+	}
+
+	cmd := exec.Command(facades.Storage().Disk("public").Path("whisper\\whisper-faster.exe"), args...)
 
 	// Create a new file for logging requests.
 	logFile, err := os.Create(facades.Storage().Disk("public").Path("logs\\logs.log"))
